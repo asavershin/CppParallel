@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.tpp": "cpp"
+    },
+    "editor.formatOnSave": true,
+    // "clang-format.executable": "/usr/bin/clang-format",
+    "clang-format.language.cpp.style": "file",
+    "editor.defaultFormatter": "xaver.clang-format"
+}
+// "clang-format.executable": "/usr/bin/clang-format",
