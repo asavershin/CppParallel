@@ -22,7 +22,7 @@ int main() {
 
         // Используем OpenMP для распараллеливания подсчета суммы массива
         int sum = 0;
-#pragma omp parallel for redeuction(+ : sum)
+#pragma omp parallel for reduction(+ : sum)
         for (int i = 0; i < size; ++i) {
             sum += numbers[i];
         }
