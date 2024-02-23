@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
             }
 
             // Считаем самую первую часть производной
-            computeDerivativeX(dx, elements_per_process, size);
+            computeDerivativeX(elements_per_process, size);
 
             // Принимаем производные от других процессов и добавляем их к общему
             // массиву производных
