@@ -37,14 +37,14 @@ int main(int argc, char* argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
     MPI_Comm_size(MPI_COMM_WORLD, &np);
     int* a = nullptr;
-    for (auto n : sizes) {
+    for (auto size : sizes) {
         // Главный процесс
         if (pid == 0) {
-            int* a = new int[n];
+            int* a = new int[size];
             int index, i;
-            elements_per_process = n / np;
+            elements_per_process = size / np;
 
-            generateArray(a, n);
+            generateArray(a, size);
 
             // Замер времени начала выполнения
             auto start_time = std::chrono::high_resolution_clock::now();
@@ -60,16 +60,14 @@ int main(int argc, char* argv[]) {
                 }
 
                 index = i * elements_per_process;
-                int elements_left = n - index;
+                int elements_left = size - index;
 
                 MPI_Send(&elements_left, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
                 MPI_Send(&a[index], elements_left, MPI_INT, i, 0,
                          MPI_COMM_WORLD);
             }
 
-            int sum = 0;
-            for (i = 0; i < elements_per_process; i++)
-                sum += a[i];
+            int sum = sumArray(a, elements_per_process);
 
             // Собираем все суммы
             int tmp;
@@ -84,7 +82,7 @@ int main(int argc, char* argv[]) {
             auto end_time = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> elapsed = end_time - start_time;
 
-            std::cout << "Размер массива: " << n << ", Сумма: " << sum
+            std::cout << "Размер массива: " << size << ", Сумма: " << sum
                       << ", Время выполнения: " << (elapsed.count())
                       << " секунд" << std::endl;
         }
@@ -97,9 +95,7 @@ int main(int argc, char* argv[]) {
             MPI_Recv(a, n_elements_recieved, MPI_INT, 0, 0, MPI_COMM_WORLD,
                      &status);
 
-            int partial_sum = 0;
-            for (int i = 0; i < n_elements_recieved; i++)
-                partial_sum += a[i];
+            int partial_sum = sumArray(a, n_elements_recieved);
 
             MPI_Send(&partial_sum, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
         }
