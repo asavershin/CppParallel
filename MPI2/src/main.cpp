@@ -74,8 +74,6 @@ int main(int argc, char* argv[]) {
             for (i = 1; i < np; i++) {
                 MPI_Recv(&tmp, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD,
                          &status);
-                int sender = status.MPI_SOURCE;
-
                 sum += tmp;
             }
 

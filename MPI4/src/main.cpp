@@ -32,7 +32,7 @@ void multiplyMatrices(int rows1, int cols1, int rows2, int cols2) {
 }
 
 main(int argc, char** argv) {
-    int pid, np, source, i, element_per_process, index, j, k;
+    int pid, np, source, i, element_per_process, index;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
