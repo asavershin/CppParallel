@@ -72,16 +72,16 @@ int main(int argc, char* argv[]) {
                     MPI_Send(&elements_per_process, 1, MPI_INT, i, 0,
                              MPI_COMM_WORLD);
                     MPI_Send(&A[index][0], elements_per_process * size,
-                             MPI_DOUBLE, i, 1, MPI_COMM_WORLD);
-                    MPI_Send(&index, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
+                             MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+                    MPI_Send(&index, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
                 }
 
                 index = i * elements_per_process;
                 int elements_left = size - index;
                 MPI_Send(&elements_left, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
-                MPI_Send(&A[index][0], elements_left * size, MPI_DOUBLE, i, 1,
+                MPI_Send(&A[index][0], elements_left * size, MPI_DOUBLE, i, 0,
                          MPI_COMM_WORLD);
-                MPI_Send(&index, 1, MPI_INT, i, 2, MPI_COMM_WORLD);
+                MPI_Send(&index, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
             }
 
             // Считаем самую первую часть производной
@@ -90,11 +90,11 @@ int main(int argc, char* argv[]) {
             // Принимаем производные от других процессов и добавляем их к общему
             // массиву производных
             for (int i = 1; i < np; i++) {
-                MPI_Recv(&index, 1, MPI_INT, i, 0, MPI_COMM_WORLD, &status);
+                MPI_Recv(&index, 1, MPI_INT, i, 1, MPI_COMM_WORLD, &status);
                 MPI_Recv(&n_elements_recieved, 1, MPI_INT, i, 1, MPI_COMM_WORLD,
                          &status);
                 MPI_Recv(&B[index][0], n_elements_recieved * size, MPI_DOUBLE,
-                         i, 2, MPI_COMM_WORLD, &status);
+                         i, 1, MPI_COMM_WORLD, &status);
             }
 
             auto end_time = std::chrono::high_resolution_clock::now();
@@ -110,18 +110,18 @@ int main(int argc, char* argv[]) {
             MPI_Recv(&n_elements_recieved, 1, MPI_INT, 0, 0, MPI_COMM_WORLD,
                      &status);
 
-            MPI_Recv(&A[0][0], n_elements_recieved * size, MPI_DOUBLE, 0, 1,
+            MPI_Recv(&A, n_elements_recieved * size, MPI_DOUBLE, 0, 0,
                      MPI_COMM_WORLD, &status);
-            MPI_Recv(&index, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
+            MPI_Recv(&index, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
 
             // Вычисление производной для полученной части массива
             computeDerivativeX(n_elements_recieved, size);
 
             // Отправка вычисленных производных обратно в главный процесс
 
-            MPI_Send(&index, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+            MPI_Send(&index, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
             MPI_Send(&n_elements_recieved, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
-            MPI_Send(&B[0][0], n_elements_recieved * size, MPI_DOUBLE, 0, 2,
+            MPI_Send(&B, n_elements_recieved * size, MPI_DOUBLE, 0, 1,
                      MPI_COMM_WORLD);
         }
     }

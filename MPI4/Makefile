@@ -13,7 +13,7 @@ all: $(BIN)/$(EXECUTABLE)
 
 run: clean all
 	clear
-	mpirun -np 6 ./$(BIN)/$(EXECUTABLE)
+	mpirun -np 10 ./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
